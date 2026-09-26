@@ -1,0 +1,6 @@
+# Secrets and machine-local overrides never go in this repo
+*.local
+.zshrc.local
+*.bak*
+*.pre-dotfiles-*
+.env

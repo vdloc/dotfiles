@@ -1,0 +1,78 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Minimal: plain text, muted Catppuccin Mocha tones, no powerline blocks.
+#   ~/Projects/app  main !2 ?1  node 22  3s
+#   ❯
+# The old colourful powerline version is in starship.toml.powerline-bak.
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$python\
+$golang\
+$rust\
+$cmd_duration\
+$line_break\
+$character"""
+
+add_newline = true
+palette = 'mocha'
+
+[palettes.mocha]
+text = '#cdd6f4'
+subtext = '#a6adc8'
+muted = '#6c7086'
+blue = '#89b4fa'
+mauve = '#cba6f7'
+red = '#f38ba8'
+yellow = '#f9e2af'
+
+[directory]
+style = 'bold blue'
+truncation_length = 3
+truncate_to_repo = true
+format = '[$path]($style)[$read_only]($read_only_style) '
+
+[git_branch]
+symbol = ''
+style = 'subtext'
+format = '[$symbol$branch]($style) '
+
+[git_status]
+style = 'yellow'
+format = '([$all_status$ahead_behind]($style) )'
+
+[nodejs]
+symbol = 'node '
+style = 'muted'
+format = '[$symbol$version]($style) '
+version_format = '${major}'
+
+[python]
+symbol = 'py '
+style = 'muted'
+format = '[$symbol$version( $virtualenv)]($style) '
+version_format = '${major}.${minor}'
+
+[golang]
+symbol = 'go '
+style = 'muted'
+format = '[$symbol$version]($style) '
+version_format = '${major}.${minor}'
+
+[rust]
+symbol = 'rs '
+style = 'muted'
+format = '[$symbol$version]($style) '
+version_format = '${major}.${minor}'
+
+[cmd_duration]
+min_time = 3000
+style = 'muted'
+format = '[$duration]($style) '
+
+[character]
+success_symbol = '[❯](mauve)'
+error_symbol = '[❯](red)'
+vimcmd_symbol = '[❮](subtext)'
