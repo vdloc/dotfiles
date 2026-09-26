@@ -15,10 +15,15 @@ local c = {
 -- ==========================================================
 -- 0. INPUT METHOD (ibus / ibus-bamboo for Vietnamese)
 -- ==========================================================
+local is_windows = wezterm.target_triple:find('windows') ~= nil
+
 -- Required on X11: without this WezTerm consumes keystrokes raw and never
 -- forwards them to ibus, so Vietnamese tone marks never compose.
+-- On Windows, use_ime alone is enough for UniKey / EVKey / Windows IME.
 config.use_ime = true
-config.xim_im_name = 'ibus'
+if not is_windows then
+  config.xim_im_name = 'ibus'
+end
 
 -- ==========================================================
 -- 1. AESTHETICS
@@ -415,6 +420,20 @@ for i = 1, 9 do
   table.insert(config.keys, { key = tostring(i), mods = 'LEADER', action = act.ActivateTab(i - 1) })
 end
 
+-- Shifted keys (G, S, |, < ...) sometimes arrive as the bare character with
+-- no SHIFT modifier (seen with XIM/ibus active), so bind both forms.
+do
+  local extra = {}
+  for _, k in ipairs(config.keys) do
+    local is_shifted_char = #k.key == 1 and k.key:match('[^%l%d]')
+    if is_shifted_char and k.mods and k.mods:find('SHIFT') then
+      local mods = k.mods:gsub('|?SHIFT', ''):gsub('^|', '')
+      table.insert(extra, { key = k.key, mods = mods == '' and 'NONE' or mods, action = k.action })
+    end
+  end
+  for _, k in ipairs(extra) do table.insert(config.keys, k) end
+end
+
 config.key_tables = {
   resize_pane = {
     { key = 'h', action = act.AdjustPaneSize { 'Left', 2 } },
@@ -454,7 +473,13 @@ config.mouse_bindings = {
 -- ==========================================================
 -- 6. MISC
 -- ==========================================================
-config.default_prog = { 'zsh', '-l' }
+if is_windows then
+  -- zsh setup lives inside WSL (clone ~/dotfiles there and run install.sh).
+  -- Change the distro name if yours differs: `wsl -l -v` in PowerShell.
+  config.default_domain = 'WSL:Ubuntu'
+else
+  config.default_prog = { 'zsh', '-l' }
+end
 config.scrollback_lines = 20000
 config.enable_scroll_bar = false
 config.warn_about_missing_glyphs = false
